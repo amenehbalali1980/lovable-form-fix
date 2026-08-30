@@ -88,9 +88,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@Lovable" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "default" },
-      { name: "apple-mobile-web-app-title", content: "PackageYar" },
+      { name: "apple-mobile-web-app-title", content: "پکیج یار" },
       { name: "mobile-web-app-capable", content: "yes" },
-      { name: "application-name", content: "PackageYar" },
+      { name: "application-name", content: "پکیج یار" },
     ],
     links: [
       {
