@@ -8,6 +8,7 @@ export const getRouter = () => {
   const router = createRouter({
     routeTree,
     context: { queryClient },
+    basepath: (import.meta.env["VITE_BASE_PATH"] as string | undefined) ?? "/",
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
   });
