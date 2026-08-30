@@ -10,7 +10,7 @@ import { VitePWA } from "vite-plugin-pwa";
 const isGitHubActions = process.env["GITHUB_ACTIONS"] === "true";
 // GITHUB_REPOSITORY is "owner/repo" inside Actions, so the base path follows whichever
 // repository publishes the Pages site instead of a hardcoded name.
-const repoName = process.env["GITHUB_REPOSITORY"]?.split("/")[1] ?? "js-package-pal";
+const repoName = process.env["GITHUB_REPOSITORY"]?.split("/")[1] ?? "packageyar";
 // GitHub Pages project sites are served under /<repoName>/. Use an absolute base so
 // TanStack Router derives the correct router basepath and asset URLs resolve from the repo root.
 const base = isGitHubActions ? `/${repoName}/` : "/";
