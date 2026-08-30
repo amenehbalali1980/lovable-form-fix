@@ -113,10 +113,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+// In the static GitHub Pages build the app is mounted into an existing
+// <div id="root"> by src/entry-client.tsx, so the shell must NOT render another
+// <html>/<head>/<body>. Nested document tags produce an invalid DOM tree and send
+// React's event dispatcher into an infinite loop when it walks element parents —
+// the tab freezes on the first typed character in any form.
+const isStaticShell = import.meta.env["VITE_STATIC_SHELL"] === "true";
+
 function RootShell({ children }: { children: ReactNode }) {
   useEffect(() => {
     setupPwa();
   }, []);
+
+  if (isStaticShell) {
+    return <>{children}</>;
+  }
 
   return (
     <html lang="fa" dir="rtl">
