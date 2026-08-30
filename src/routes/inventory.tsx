@@ -8,12 +8,12 @@ import { useProducts, useRemove, useSave } from "@/lib/queries";
 export const Route = createFileRoute("/inventory")({
   head: () => ({
     meta: [
-      { title: "انبار کالا — پکیج‌یار" },
+      { title: "انبار کالا — PackageYar" },
       {
         name: "description",
         content: "مدیریت موجودی قطعات پکیج، قیمت خرید و فروش و هشدار موجودی کم.",
       },
-      { property: "og:title", content: "انبار کالا — پکیج‌یار" },
+      { property: "og:title", content: "انبار کالا — PackageYar" },
       { property: "og:description", content: "کنترل موجودی قطعات و قیمت‌ها." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/inventory" },

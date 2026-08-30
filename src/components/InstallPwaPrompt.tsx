@@ -94,7 +94,7 @@ export function InstallPwaPrompt() {
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold text-foreground">نصب نسخهٔ اپلیکیشن (PWA)</p>
             <p className="mt-1 text-xs leading-6 text-muted-foreground">
-              برای دسترسی سریع و کار آفلاین، پکیج‌یار را روی همین دستگاه نصب کنید:
+              برای دسترسی سریع و کار آفلاین، PackageYar را روی همین دستگاه نصب کنید:
             </p>
 
             {platform === "ios" ? (

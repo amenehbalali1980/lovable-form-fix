@@ -12,7 +12,7 @@ export type ShopProfile = {
 };
 
 export const emptyShopProfile: ShopProfile = {
-  shopName: "پکیج‌یار",
+  shopName: "PackageYar",
   ownerName: "",
   phone: "",
   address: "",

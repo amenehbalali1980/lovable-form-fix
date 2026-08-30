@@ -79,18 +79,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "پکیج‌یار" },
+      { title: "PackageYar" },
       { name: "description", content: "سیستم مدیریت تعمیرکار پکیج" },
       { name: "theme-color", content: "#1f6470" },
-      { property: "og:site_name", content: "پکیج‌یار" },
+      { property: "og:site_name", content: "PackageYar" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "default" },
-      { name: "apple-mobile-web-app-title", content: "پکیج‌یار" },
+      { name: "apple-mobile-web-app-title", content: "PackageYar" },
       { name: "mobile-web-app-capable", content: "yes" },
-      { name: "application-name", content: "پکیج‌یار" },
+      { name: "application-name", content: "PackageYar" },
     ],
     links: [
       {

@@ -48,8 +48,8 @@ export default defineConfig({
         filename: "sw.js",
         devOptions: { enabled: false },
         manifest: {
-          name: "پکیج‌یار",
-          short_name: "پکیج‌یار",
+          name: "PackageYar",
+          short_name: "PackageYar",
           description: "سیستم مدیریت تعمیرکار پکیج — مشتریان، تعمیرات، انبار و فروش",
           lang: "fa",
           dir: "rtl",

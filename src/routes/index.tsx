@@ -13,13 +13,13 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "پکیج‌یار — مدیریت تعمیرکار پکیج" },
+      { title: "PackageYar — مدیریت تعمیرکار پکیج" },
       {
         name: "description",
         content:
           "مدیریت مشتریان، تعمیرات، انبار و فاکتورهای فروش برای تعمیرکاران پکیج، آفلاین و قابل نصب روی موبایل و ویندوز.",
       },
-      { property: "og:title", content: "پکیج‌یار — مدیریت تعمیرکار پکیج" },
+      { property: "og:title", content: "PackageYar — مدیریت تعمیرکار پکیج" },
       {
         property: "og:description",
         content: "داشبورد فروش، تعمیرات، بدهکاران و انبار در یک اپ آفلاین.",
@@ -73,7 +73,7 @@ function Dashboard() {
   const lowStock = products.filter((p) => (p.qty || 0) <= (p.minQty || 0));
 
   return (
-    <AppShell title="پکیج‌یار" subtitle={`امروز ${today}`}>
+    <AppShell title="PackageYar" subtitle={`امروز ${today}`}>
       <div className="grid grid-cols-2 gap-3">
         <Stat icon="💰" label="فروش امروز" value={formatMoney(todaySales)} />
         <Stat icon="🔧" label="تعمیرات امروز" value={`${formatNumber(todayRepairs.length)} مورد`} />

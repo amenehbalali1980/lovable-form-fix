@@ -17,12 +17,12 @@ import {
 export const Route = createFileRoute("/customers/$customerId")({
   head: () => ({
     meta: [
-      { title: "جزئیات مشتری — پکیج‌یار" },
+      { title: "جزئیات مشتری — PackageYar" },
       {
         name: "description",
         content: "مشاهده اطلاعات مشتری، دستگاه‌ها، سوابق تعمیرات و فاکتورها.",
       },
-      { property: "og:title", content: "جزئیات مشتری — پکیج‌یار" },
+      { property: "og:title", content: "جزئیات مشتری — PackageYar" },
       { property: "og:description", content: "دستگاه‌ها و سوابق مشتری." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
