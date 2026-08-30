@@ -16,12 +16,12 @@ import {
 export const Route = createFileRoute("/customers/")({
   head: () => ({
     meta: [
-      { title: "مشتریان — پکیج‌یار" },
+      { title: "مشتریان — PackageYar" },
       {
         name: "description",
-        content: "فهرست مشتریان، شماره تماس و مانده حساب هر مشتری در پکیج‌یار.",
+        content: "فهرست مشتریان، شماره تماس و مانده حساب هر مشتری در PackageYar.",
       },
-      { property: "og:title", content: "مشتریان — پکیج‌یار" },
+      { property: "og:title", content: "مشتریان — PackageYar" },
       { property: "og:description", content: "مدیریت مشتریان و مانده حساب آن‌ها." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/customers" },

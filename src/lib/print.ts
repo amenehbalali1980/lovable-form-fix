@@ -90,7 +90,7 @@ export function printDocument(doc: PrintDocument) {
       <div class="shop">
         ${profile.logo ? `<img class="logo" src="${escapeHtml(profile.logo)}" alt="logo" />` : ""}
         <div class="shop-text">
-        <h1>${escapeHtml(profile.shopName || "پکیج‌یار")}</h1>
+        <h1>${escapeHtml(profile.shopName || "PackageYar")}</h1>
         <div>
           ${profile.ownerName ? `مدیریت: ${escapeHtml(profile.ownerName)}<br/>` : ""}
           ${profile.phone ? `تلفن: ${escapeHtml(profile.phone)}<br/>` : ""}

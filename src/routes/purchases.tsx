@@ -10,12 +10,12 @@ import { useShopProfile } from "@/lib/settings";
 export const Route = createFileRoute("/purchases")({
   head: () => ({
     meta: [
-      { title: "فاکتور خرید — پکیج‌یار" },
+      { title: "فاکتور خرید — PackageYar" },
       {
         name: "description",
         content: "ثبت فاکتور خرید قطعات از تأمین‌کننده و ورود موجودی به انبار.",
       },
-      { property: "og:title", content: "فاکتور خرید — پکیج‌یار" },
+      { property: "og:title", content: "فاکتور خرید — PackageYar" },
       { property: "og:description", content: "مدیریت خرید قطعات و موجودی انبار." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/purchases" },

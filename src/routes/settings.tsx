@@ -24,12 +24,12 @@ import {
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
-      { title: "تنظیمات و پشتیبان‌گیری — پکیج‌یار" },
+      { title: "تنظیمات و پشتیبان‌گیری — PackageYar" },
       {
         name: "description",
-        content: "وضعیت دیتابیس، تهیه فایل پشتیبان و بازگردانی اطلاعات پکیج‌یار.",
+        content: "وضعیت دیتابیس، تهیه فایل پشتیبان و بازگردانی اطلاعات PackageYar.",
       },
-      { property: "og:title", content: "تنظیمات و پشتیبان‌گیری — پکیج‌یار" },
+      { property: "og:title", content: "تنظیمات و پشتیبان‌گیری — PackageYar" },
       { property: "og:description", content: "پشتیبان‌گیری، بازگردانی و اطلاعات نسخه اپ." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/settings" },
@@ -197,7 +197,7 @@ function SettingsPage() {
   };
 
   return (
-    <AppShell title="تنظیمات" subtitle="پکیج‌یار نسخه ۱٫۰">
+    <AppShell title="تنظیمات" subtitle="PackageYar نسخه ۱٫۰">
       <div className="py-card space-y-2 p-4 text-sm">
         <div className="flex justify-between">
           <span className="text-muted-foreground">وضعیت دیتابیس</span>
@@ -381,13 +381,13 @@ function SettingsPage() {
         <div className="py-card mt-4 space-y-2 p-4">
           <h2 className="text-sm font-bold">📲 نصب اپ</h2>
           <p className="text-xs text-muted-foreground">
-            پکیج‌یار را روی صفحه اصلی گوشی یا دسکتاپ ویندوز نصب کنید.
+            PackageYar را روی صفحه اصلی گوشی یا دسکتاپ ویندوز نصب کنید.
           </p>
           <button
             className="py-btn py-btn-accent w-full"
             onClick={() => promptRef.current?.prompt()}
           >
-            نصب پکیج‌یار
+            نصب PackageYar
           </button>
         </div>
       ) : (

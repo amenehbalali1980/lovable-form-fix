@@ -18,12 +18,12 @@ import { useShopProfile } from "@/lib/settings";
 export const Route = createFileRoute("/payments")({
   head: () => ({
     meta: [
-      { title: "دریافت‌ها و بدهکاران — پکیج‌یار" },
+      { title: "دریافت‌ها و بدهکاران — PackageYar" },
       {
         name: "description",
         content: "ثبت پرداخت مشتریان و مشاهده فهرست بدهکاران و مانده حساب‌ها.",
       },
-      { property: "og:title", content: "دریافت‌ها و بدهکاران — پکیج‌یار" },
+      { property: "og:title", content: "دریافت‌ها و بدهکاران — PackageYar" },
       { property: "og:description", content: "ثبت دریافتی نقدی و پیگیری مانده حساب مشتریان." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/payments" },

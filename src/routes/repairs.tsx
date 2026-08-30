@@ -17,12 +17,12 @@ import { checkStock } from "@/lib/stock";
 export const Route = createFileRoute("/repairs")({
   head: () => ({
     meta: [
-      { title: "سوابق تعمیرات — پکیج‌یار" },
+      { title: "سوابق تعمیرات — PackageYar" },
       {
         name: "description",
         content: "ثبت و پیگیری تعمیرات پکیج با اجرت، هزینه قطعات و وضعیت کار.",
       },
-      { property: "og:title", content: "سوابق تعمیرات — پکیج‌یار" },
+      { property: "og:title", content: "سوابق تعمیرات — PackageYar" },
       { property: "og:description", content: "ثبت تعمیر جدید و مشاهده سوابق مشتریان." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/repairs" },

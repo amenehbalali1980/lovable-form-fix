@@ -44,11 +44,11 @@ function buildHtml(entryJs, css) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>پکیج‌یار — مدیریت تعمیرکار پکیج</title>
+  <title>PackageYar — مدیریت تعمیرکار پکیج</title>
   <meta name="description" content="مدیریت مشتریان، تعمیرات، انبار و فاکتورهای فروش برای تعمیرکاران پکیج، آفلاین و قابل نصب روی موبایل و ویندوز.">
   <meta name="theme-color" content="#1f6470">
-  <meta property="og:site_name" content="پکیج‌یار">
-  <meta property="og:title" content="پکیج‌یار — مدیریت تعمیرکار پکیج">
+  <meta property="og:site_name" content="PackageYar">
+  <meta property="og:title" content="PackageYar — مدیریت تعمیرکار پکیج">
   <meta property="og:description" content="داشبورد فروش، تعمیرات، بدهکاران و انبار در یک اپ آفلاین.">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
@@ -60,7 +60,7 @@ function buildHtml(entryJs, css) {
   <link rel="stylesheet" href="${css}">
   <noscript>
     <style>body{padding:2rem;font-family:system-ui;text-align:center}</style>
-    <p>برای استفاده از پکیج‌یار جاوااسکریپت مرورگر را فعال کنید.</p>
+    <p>برای استفاده از PackageYar جاوااسکریپت مرورگر را فعال کنید.</p>
   </noscript>
 </head>
 <body>

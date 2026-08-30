@@ -19,12 +19,12 @@ import { useShopProfile } from "@/lib/settings";
 export const Route = createFileRoute("/sales")({
   head: () => ({
     meta: [
-      { title: "فاکتور فروش — پکیج‌یار" },
+      { title: "فاکتور فروش — PackageYar" },
       {
         name: "description",
         content: "صدور فاکتور فروش قطعات، ثبت مبلغ دریافتی و مشاهده فاکتورهای گذشته.",
       },
-      { property: "og:title", content: "فاکتور فروش — پکیج‌یار" },
+      { property: "og:title", content: "فاکتور فروش — PackageYar" },
       { property: "og:description", content: "صدور و مدیریت فاکتورهای فروش." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/sales" },

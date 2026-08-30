@@ -14,9 +14,9 @@ import {
 export const Route = createFileRoute("/reports")({
   head: () => ({
     meta: [
-      { title: "گزارش‌ها — پکیج‌یار" },
-      { name: "description", content: "گزارش فروش، تعمیرات، بدهکاران و موجودی کم انبار پکیج‌یار." },
-      { property: "og:title", content: "گزارش‌ها — پکیج‌یار" },
+      { title: "گزارش‌ها — PackageYar" },
+      { name: "description", content: "گزارش فروش، تعمیرات، بدهکاران و موجودی کم انبار PackageYar." },
+      { property: "og:title", content: "گزارش‌ها — PackageYar" },
       { property: "og:description", content: "گزارش‌های مالی و عملیاتی کسب‌وکار." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/reports" },
