@@ -31,7 +31,13 @@ export default defineConfig({
   vite: {
     base,
     define: isGitHubActions
-      ? { "import.meta.env.VITE_BASE_PATH": JSON.stringify(`/${repoName}`) }
+      ? {
+          "import.meta.env.VITE_BASE_PATH": JSON.stringify(`/${repoName}`),
+          // Tells src/routes/__root.tsx to skip rendering <html>/<head>/<body>,
+          // because scripts/post-build.mjs already generates the HTML shell and
+          // entry-client.tsx mounts into <div id="root">.
+          "import.meta.env.VITE_STATIC_SHELL": JSON.stringify("true"),
+        }
       : {},
     plugins: [
       VitePWA({
