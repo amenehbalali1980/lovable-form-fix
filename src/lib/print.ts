@@ -59,7 +59,7 @@ export function printDocument(doc: PrintDocument) {
 <title>${escapeHtml(doc.docTitle)}</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" />
 <style>
-  .no-print { margin: 12px; text-align: center; }
+  .no-print { margin: 12px; text-align: center; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;}
   .no-print button {
     font-family: Vazirmatn, Tahoma, sans-serif;
     font-size: 15px;
@@ -70,6 +70,7 @@ export function printDocument(doc: PrintDocument) {
     color: #fff;
     cursor: pointer;
   }
+    .no-print button.secondary { background: #666; }
   @media print {
     .no-print { display: none !important; }
   }
@@ -120,8 +121,9 @@ export function printDocument(doc: PrintDocument) {
 </head>
 <body>
       <div class="no-print">
-    <button type="button" onclick="window.close()">← بستن / بازگشت</button>
-  </div>
+  <button type="button" onclick="window.print()">چاپ / اشتراک‌گذاری</button>
+  <button type="button" class="secondary" onclick="window.close()">بستن</button>
+</div>
   <div class="sheet">
     <header>
       <div class="shop">
@@ -176,18 +178,11 @@ export function printDocument(doc: PrintDocument) {
     </footer>
   </div>
     <script>
-    function closePrintWindow() {
-      try { window.close(); } catch (e) {}
-    }
-    window.onload = function () {
-      setTimeout(function () { window.print(); }, 350);
-    };
-    window.onafterprint = closePrintWindow;
-    // بعضی مرورگرهای موبایل afterprint را دیر یا ناقص می‌زنند
-    window.addEventListener("focus", function () {
-      setTimeout(closePrintWindow, 400);
-    });
-  </script>
+  function closePrintWindow() {
+    try { window.close(); } catch (e) {}
+  }
+  window.onafterprint = closePrintWindow;
+</script>
 </body>
 </html>`);
   win.document.close();
