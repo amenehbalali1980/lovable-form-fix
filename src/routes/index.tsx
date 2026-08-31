@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
-import { formatMoney, formatNumber, todayJalali } from "@/lib/format";
+import { formatMoney, formatNumber, todayJalali, todayJalaliWithWeekday } from "@/lib/format";
 import {
   customerBalance,
   useCustomers,
@@ -73,7 +73,7 @@ function Dashboard() {
   const lowStock = products.filter((p) => (p.qty || 0) <= (p.minQty || 0));
 
   return (
-    <AppShell title="PackageYar" subtitle={`امروز ${today}`}>
+    <AppShell title="پکیج یار" subtitle={`امروز ${todayJalaliWithWeekday()}`}>
       <div className="grid grid-cols-2 gap-3">
         <Stat icon="💰" label="فروش امروز" value={formatMoney(todaySales)} />
         <Stat icon="🔧" label="تعمیرات امروز" value={`${formatNumber(todayRepairs.length)} مورد`} />

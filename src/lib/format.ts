@@ -62,3 +62,18 @@ export function todayJalali(date = new Date()): string {
   const j = gregorianToJalali(date.getFullYear(), date.getMonth() + 1, date.getDate());
   return `${j.year}/${String(j.month).padStart(2, "0")}/${String(j.day).padStart(2, "0")}`;
 }
+const WEEKDAYS_FA = [
+  "یکشنبه",
+  "دوشنبه",
+  "سه‌شنبه",
+  "چهارشنبه",
+  "پنجشنبه",
+  "جمعه",
+  "شنبه",
+] as const;
+
+/** مثلاً: شنبه ۱۴۰۵/۰۶/۰۹ */
+export function todayJalaliWithWeekday(date = new Date()): string {
+  const weekday = WEEKDAYS_FA[date.getDay()] ?? "";
+  return `${weekday} ${todayJalali(date)}`;
+}
