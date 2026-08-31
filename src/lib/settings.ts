@@ -10,6 +10,7 @@ export type ShopProfile = {
   footerNote: string;
   logo: string;
   headerBanner: string;
+  stamp: string;
 };
 
 export const emptyShopProfile: ShopProfile = {
@@ -21,6 +22,7 @@ export const emptyShopProfile: ShopProfile = {
   footerNote: "",
   logo: "",
   headerBanner: "",
+  stamp: "",
 };
 
 const KEY = "shopProfile";

@@ -96,6 +96,26 @@ export function printDocument(doc: PrintDocument) {
   footer { margin-top:26px; display:flex; justify-content:space-between; align-items:flex-end; font-size:11px; color:#555; }
   .sign { width:180px; text-align:center; border-top:1px dashed #999; padding-top:6px; }
   .note { max-width:60%; line-height:1.8; }
+    .sign-wrap {
+    width: 180px;
+    text-align: center;
+    position: relative;
+    min-height: 90px;
+  }
+  .sign-label {
+    border-top: 1px dashed #999;
+    padding-top: 6px;
+    margin-top: 8px;
+  }
+  .stamp-img {
+    width: 88px;
+    height: 88px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 4px;
+    transform: rotate(-12deg);
+    opacity: 0.92;
+  }
 </style>
 </head>
 <body>
@@ -145,7 +165,14 @@ export function printDocument(doc: PrintDocument) {
         ${profile.cardNumber ? `شماره کارت: ${escapeHtml(profile.cardNumber)}<br/>` : ""}
         ${profile.footerNote ? escapeHtml(profile.footerNote) : ""}
       </div>
-      <div class="sign">مهر و امضا</div>
+      <div class="sign-wrap">
+  ${
+    profile.stamp
+      ? `<img class="stamp-img" src="${escapeHtml(profile.stamp)}" alt="مهر" />`
+      : ""
+  }
+  <div class="sign-label">مهر و امضا</div>
+</div>
     </footer>
   </div>
     <script>

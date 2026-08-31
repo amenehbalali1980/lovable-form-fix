@@ -47,6 +47,7 @@ function SettingsPage() {
   const logoRef = useRef<HTMLInputElement>(null);
   const csvRef = useRef<HTMLInputElement>(null);
   const bannerRef = useRef<HTMLInputElement>(null);
+  const stampRef = useRef<HTMLInputElement>(null);
   const csvTargetRef = useRef<"products" | "customers">("products");
 
   const [message, setMessage] = useState("");
@@ -312,6 +313,49 @@ function SettingsPage() {
       const reader = new FileReader();
       reader.onload = () =>
         setShop((p) => ({ ...p, headerBanner: String(reader.result ?? "") }));
+      reader.readAsDataURL(file);
+      e.target.value = "";
+    }}
+  />
+</div>
+<div className="space-y-2 border-t border-border pt-3">
+  <p className="text-xs text-muted-foreground">
+    تصویر مهر در پایین فاکتورها و رسیدهای چاپی، کنار «مهر و امضا» نمایش داده می‌شود.
+  </p>
+  {shop.stamp ? (
+    <img
+      src={shop.stamp}
+      alt="مهر"
+      className="h-20 w-20 rounded-md border object-contain"
+    />
+  ) : (
+    <div className="flex h-20 w-20 items-center justify-center rounded-md border text-xs text-muted-foreground">
+      بدون مهر
+    </div>
+  )}
+  <div className="flex gap-2">
+    <button className="py-btn py-btn-soft flex-1" onClick={() => stampRef.current?.click()}>
+      بارگذاری مهر
+    </button>
+    {shop.stamp ? (
+      <button
+        className="py-btn py-btn-soft"
+        onClick={() => setShop((p) => ({ ...p, stamp: "" }))}
+      >
+        حذف
+      </button>
+    ) : null}
+  </div>
+  <input
+    ref={stampRef}
+    type="file"
+    accept="image/*"
+    className="hidden"
+    onChange={(e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => setShop((p) => ({ ...p, stamp: String(reader.result ?? "") }));
       reader.readAsDataURL(file);
       e.target.value = "";
     }}
