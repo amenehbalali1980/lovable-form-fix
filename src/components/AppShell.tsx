@@ -34,7 +34,7 @@ export function AppShell({
           <img
             src={banner}
             alt="بنر"
-            className="mx-auto block h-24 w-full max-w-3xl object-cover"
+            className="mx-auto block h-24 w-full max-w-3xl object-cover sm:h-36 md:h-44"
           />
         </div>
       ) : null}
