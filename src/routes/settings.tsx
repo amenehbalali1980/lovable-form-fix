@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { AppShell } from "@/components/AppShell";
+import { toast } from "sonner";
 import {
   addRecord,
   DB_NAME,
@@ -93,14 +94,14 @@ function SettingsPage() {
     link.download = `packageyar-backup-${todayJalali().replace(/\//g, "-")}.json`;
     link.click();
     URL.revokeObjectURL(url);
-    setMessage("فایل پشتیبان ساخته شد ✓");
+    toast.success("فایل پشتیبان ساخته شد ✓");
   };
 
   const restore = async (file: File) => {
     const text = await file.text();
     await importAll(JSON.parse(text));
     await qc.invalidateQueries();
-    setMessage("اطلاعات بازگردانی شد ✓");
+    toast.success("اطلاعات بازگردانی شد ✓");
   };
 
   const importMarkdown = async (file: File) => {
@@ -151,7 +152,7 @@ function SettingsPage() {
     }
 
     await qc.invalidateQueries();
-    setMessage(
+    toast.success(
       imported > 0
         ? `${imported} کالا از Markdown وارد شد ✓`
         : "هیچ کالایی پیدا نشد. فرمت فایل را بررسی کنید.",
@@ -161,7 +162,7 @@ function SettingsPage() {
   const exportCsv = async (store: "products" | "customers" | "repairs" | "salesInvoices") => {
     const rows = (await getAll<Record<string, unknown>>(store)) ?? [];
     downloadCsv(`packageyar-${store}-${todayJalali().replace(/\//g, "-")}.csv`, toCsv(rows));
-    setMessage("فایل CSV ساخته شد ✓");
+    toast.success("فایل CSV ساخته شد ✓");
   };
 
   const importCsv = async (file: File) => {
@@ -195,7 +196,7 @@ function SettingsPage() {
       imported++;
     }
     await qc.invalidateQueries();
-    setMessage(`${imported} ردیف از CSV وارد شد ✓`);
+    toast.success(`${imported} ردیف از CSV وارد شد ✓`);
   };
 
   return (
@@ -365,7 +366,7 @@ function SettingsPage() {
           className="py-btn w-full"
           onClick={() => {
             saveShop.mutate(shop);
-            setMessage("اطلاعات مغازه ذخیره شد ✓");
+            toast.success("اطلاعات مغازه ذخیره شد ✓");
           }}
         >
           ذخیره اطلاعات مغازه
