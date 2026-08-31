@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { useShopProfile } from "@/lib/settings";
 
 const NAV = [
   { to: "/", label: "داشبورد", icon: "📊" },
@@ -11,6 +12,7 @@ const NAV = [
   { to: "/reports", label: "گزارش", icon: "📈" },
   { to: "/settings", label: "تنظیمات", icon: "⚙️" },
 ] as const;
+
 export function AppShell({
   title,
   subtitle,
@@ -22,8 +24,21 @@ export function AppShell({
   action?: ReactNode;
   children: ReactNode;
 }) {
+  const { data: profile } = useShopProfile();
+  const banner = profile?.headerBanner?.trim();
+
   return (
     <div className="min-h-screen bg-background pb-24">
+      {banner ? (
+        <div className="w-full bg-primary">
+          <img
+            src={banner}
+            alt="بنر"
+            className="mx-auto block h-24 w-full max-w-3xl object-cover"
+          />
+        </div>
+      ) : null}
+
       <header className="sticky top-0 z-20 border-b border-border bg-primary text-primary-foreground">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
           <div>
@@ -58,5 +73,7 @@ export function AppShell({
 }
 
 export function EmptyState({ text }: { text: string }) {
-  return <div className="py-card px-4 py-10 text-center text-sm text-muted-foreground">{text}</div>;
+  return (
+    <div className="py-card px-4 py-10 text-center text-sm text-muted-foreground">{text}</div>
+  );
 }

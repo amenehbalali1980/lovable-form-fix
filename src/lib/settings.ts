@@ -9,6 +9,7 @@ export type ShopProfile = {
   cardNumber: string;
   footerNote: string;
   logo: string;
+  headerBanner: string;
 };
 
 export const emptyShopProfile: ShopProfile = {
@@ -19,6 +20,7 @@ export const emptyShopProfile: ShopProfile = {
   cardNumber: "",
   footerNote: "",
   logo: "",
+  headerBanner: "",
 };
 
 const KEY = "shopProfile";

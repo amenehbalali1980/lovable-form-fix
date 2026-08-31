@@ -46,6 +46,7 @@ function SettingsPage() {
   const mdRef = useRef<HTMLInputElement>(null);
   const logoRef = useRef<HTMLInputElement>(null);
   const csvRef = useRef<HTMLInputElement>(null);
+  const bannerRef = useRef<HTMLInputElement>(null);
   const csvTargetRef = useRef<"products" | "customers">("products");
 
   const [message, setMessage] = useState("");
@@ -272,7 +273,50 @@ function SettingsPage() {
             }}
           />
         </div>
-
+        <div className="space-y-2 border-t border-border pt-3">
+  <p className="text-xs text-muted-foreground">
+    بنر هدر فقط بالای اپ نمایش داده می‌شود. در چاپ فاکتور فقط لوگو استفاده می‌شود.
+  </p>
+  {shop.headerBanner ? (
+    <img
+      src={shop.headerBanner}
+      alt="بنر هدر"
+      className="h-20 w-full rounded-md border object-cover"
+    />
+  ) : (
+    <div className="flex h-16 items-center justify-center rounded-md border text-xs text-muted-foreground">
+      بدون بنر
+    </div>
+  )}
+  <div className="flex gap-2">
+    <button className="py-btn py-btn-soft flex-1" onClick={() => bannerRef.current?.click()}>
+      بارگذاری بنر هدر
+    </button>
+    {shop.headerBanner ? (
+      <button
+        className="py-btn py-btn-soft"
+        onClick={() => setShop((p) => ({ ...p, headerBanner: "" }))}
+      >
+        حذف
+      </button>
+    ) : null}
+  </div>
+  <input
+    ref={bannerRef}
+    type="file"
+    accept="image/*"
+    className="hidden"
+    onChange={(e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () =>
+        setShop((p) => ({ ...p, headerBanner: String(reader.result ?? "") }));
+      reader.readAsDataURL(file);
+      e.target.value = "";
+    }}
+  />
+</div>
         <button
           className="py-btn w-full"
           onClick={() => {
