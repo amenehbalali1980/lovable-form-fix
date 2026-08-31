@@ -1,11 +1,5 @@
 # Package Yar Helper
-
-وقت بخیر. من یه پروژه نوشتم به زبان جاوا اسکریپت. لینک گیت هاب این پروژه اینه :https://hoseindashti1981.github.io/PackageYar-Modular/
-
-میتونی این را بررسی کنی تا بعد بهت بگم چی میخوام؟
-
-This project was built with [Lovable](https://lovable.dev).
-
+این پروژه آزمایشی و آموزشی برای انبارداری تکنسین های تاسیسات نوشته شده است.. 
 ## Build with Lovable
 
 Continue developing this project in the [Lovable editor](https://lovable.dev/projects/d392eeef-635a-4de4-8212-225b9911a130).
