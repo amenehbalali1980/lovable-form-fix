@@ -1,3 +1,6 @@
+import { printDocument } from "@/lib/print";
+import { useShopProfile } from "@/lib/settings";
+import { ProductPicker } from "@/components/ProductPicker";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { AppShell, EmptyState } from "@/components/AppShell";
@@ -61,6 +64,7 @@ function RepairsPage() {
   const save = useSave<Repair>("repairs");
   const remove = useRemove("repairs");
   const stock = useStockDeltas();
+  const profile = useShopProfile().data;
 
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<Repair>(emptyRepair());
@@ -151,7 +155,6 @@ function RepairsPage() {
             };
             save.mutate(payload);
 
-            // اصلاح تفاضلی موجودی: برگشت قطعات قبلی و کسر قطعات جدید
             const deltas = [
               ...(original?.usedParts || []).map((p) => ({ productId: p.productId, qty: p.qty })),
               ...(form.usedParts || []).map((p) => ({ productId: p.productId, qty: -p.qty })),
@@ -162,7 +165,6 @@ function RepairsPage() {
             setOpen(false);
           }}
         >
-          {/* مشتری */}
           <select
             className="py-field"
             value={form.customerId || 0}
@@ -171,7 +173,7 @@ function RepairsPage() {
               setForm({
                 ...form,
                 customerId,
-                deviceId: null, // با عوض شدن مشتری، دستگاه ریست شود
+                deviceId: null,
               });
             }}
           >
@@ -183,7 +185,6 @@ function RepairsPage() {
             ))}
           </select>
 
-          {/* دستگاه — فقط دستگاه‌های همان مشتری */}
           <select
             className="py-field"
             value={form.deviceId ?? 0}
@@ -231,6 +232,9 @@ function RepairsPage() {
           <input
             className="py-field"
             inputMode="numeric"
+            dir="ltr"
+            lang="en"
+
             placeholder="اجرت (تومان)"
             value={wageText}
             onChange={(e) => {
@@ -239,13 +243,11 @@ function RepairsPage() {
             }}
           />
 
-          {/* قطعات */}
-          <select
-            className="py-field"
-            value={0}
-            onChange={(e) => {
-              const productId = Number(e.target.value);
-              if (!productId) return;
+          <ProductPicker
+            products={products}
+            showStock
+            placeholder="+ افزودن قطعه مصرفی…"
+            onPick={(productId) => {
               const product = products.find((p) => p.id === productId);
               if (!product) return;
               setForm((prev) => ({
@@ -261,14 +263,7 @@ function RepairsPage() {
                 ],
               }));
             }}
-          >
-            <option value={0}>+ افزودن قطعه مصرفی…</option>
-            {products.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name} (موجودی: {p.qty})
-              </option>
-            ))}
-          </select>
+          />
 
           {(form.usedParts || []).map((part, index) => (
             <div key={index} className="flex items-center gap-2 rounded-md bg-muted p-2 text-xs">
@@ -276,6 +271,9 @@ function RepairsPage() {
               <input
                 className="py-field w-16 py-1"
                 inputMode="numeric"
+                dir="ltr"
+                lang="en"
+
                 value={part.qty}
                 onChange={(e) =>
                   setForm((prev) => ({
@@ -290,6 +288,9 @@ function RepairsPage() {
               <input
                 className="py-field w-24 py-1"
                 inputMode="numeric"
+                dir="ltr"
+                lang="en"
+
                 value={part.price}
                 onChange={(e) =>
                   setForm((prev) => ({
@@ -329,7 +330,6 @@ function RepairsPage() {
           <select
             className="py-field"
             value={form.status}
-
             onChange={(e) => setForm({ ...form, status: e.target.value as Repair["status"] })}
           >
             {Object.entries(STATUS).map(([value, label]) => (
@@ -372,6 +372,42 @@ function RepairsPage() {
                 <div className="flex items-center justify-between text-xs">
                   <span>{formatMoney((r.wage || 0) + (r.partsCost || 0))}</span>
                   <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      className="text-primary"
+                      onClick={() =>
+                        printDocument({
+                          docTitle: "فاکتور تعمیر",
+                          docNumber: r.id,
+                          partyLabel: "مشتری:",
+                          partyName: customerName,
+                          date: r.date,
+                          rows: (r.usedParts || []).map((p) => ({
+                            name: p.name,
+                            qty: p.qty,
+                            price: p.price,
+                          })),
+                          totals: [
+                            { label: "اجرت", value: formatMoney(r.wage || 0) },
+                            { label: "هزینه قطعات", value: formatMoney(r.partsCost || 0) },
+                            {
+                              label: "جمع کل",
+                              value: formatMoney((r.wage || 0) + (r.partsCost || 0)),
+                              strong: true,
+                            },
+                          ],
+                          extraInfo: [
+                            { label: "دستگاه:", value: deviceLabel },
+                            { label: "ایراد:", value: r.problem || "—" },
+                            { label: "کار انجام‌شده:", value: r.action || "—" },
+                            { label: "وضعیت:", value: STATUS[r.status] },
+                          ],
+                          profile,
+                        })
+                      }
+                    >
+                      چاپ
+                    </button>
                     <button type="button" className="text-primary" onClick={() => startEdit(r)}>
                       ویرایش
                     </button>

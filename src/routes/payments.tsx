@@ -74,6 +74,9 @@ function PaymentsPage() {
         <input
           className="py-field"
           inputMode="numeric"
+          dir="ltr"
+          lang="en"
+
           placeholder="مبلغ دریافتی"
           onChange={(e) => setAmount(parseNumber(e.target.value))}
         />

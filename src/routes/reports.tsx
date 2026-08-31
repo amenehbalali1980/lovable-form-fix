@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell, EmptyState } from "@/components/AppShell";
-import { formatMoney, formatNumber } from "@/lib/format";
+import { formatMoney, formatNumber, todayJalali } from "@/lib/format";
+import { printDocument } from "@/lib/print";
 import {
   customerBalance,
   useCustomers,
@@ -10,12 +11,16 @@ import {
   useRepairs,
   useSales,
 } from "@/lib/queries";
+import { useShopProfile } from "@/lib/settings";
 
 export const Route = createFileRoute("/reports")({
   head: () => ({
     meta: [
       { title: "گزارش‌ها — PackageYar" },
-      { name: "description", content: "گزارش فروش، تعمیرات، بدهکاران و موجودی کم انبار PackageYar." },
+      {
+        name: "description",
+        content: "گزارش فروش، تعمیرات، بدهکاران و موجودی کم انبار PackageYar.",
+      },
       { property: "og:title", content: "گزارش‌ها — PackageYar" },
       { property: "og:description", content: "گزارش‌های مالی و عملیاتی کسب‌وکار." },
       { property: "og:type", content: "website" },
@@ -35,12 +40,19 @@ const TABS = [
   { key: "repairs", label: "تعمیرات" },
 ] as const;
 
+const REPAIR_STATUS: Record<string, string> = {
+  open: "در جریان",
+  done: "انجام شد",
+  delivered: "تحویل شد",
+};
+
 function ReportsPage() {
   const customers = useCustomers().data ?? [];
   const repairs = useRepairs().data ?? [];
   const products = useProducts().data ?? [];
   const sales = useSales().data ?? [];
   const payments = usePayments().data ?? [];
+  const profile = useShopProfile().data;
   const [tab, setTab] = useState<(typeof TABS)[number]["key"]>("overview");
 
   const totalSales = sales.reduce((a, s) => a + (s.total || 0), 0);
@@ -60,6 +72,93 @@ function ReportsPage() {
     .filter((row) => row.balance > 0)
     .sort((a, b) => b.balance - a.balance);
 
+  function printCurrentReport() {
+    const date = todayJalali();
+    if (tab === "overview") {
+      printDocument({
+        docTitle: "گزارش خلاصه مالی",
+        partyLabel: "نوع گزارش:",
+        partyName: "خلاصه مالی",
+        date,
+        totals: [
+          { label: "کل فروش", value: formatMoney(totalSales) },
+          { label: "دریافتی فروش", value: formatMoney(totalPaidSales) },
+          { label: "درآمد تعمیرات", value: formatMoney(totalRepairIncome) },
+          { label: "کل دریافتی‌ها", value: formatMoney(totalPayments) },
+          { label: "مانده کل مشتریان", value: formatMoney(totalBalance), strong: true },
+        ],
+        profile,
+      });
+    } else if (tab === "debtors") {
+      printDocument({
+        docTitle: "گزارش بدهکاران",
+        partyLabel: "نوع گزارش:",
+        partyName: "بدهکاران",
+        date,
+        rows: debtors.map((d) => ({
+          name: d.customer.name,
+          qty: 1,
+          price: d.balance,
+        })),
+        totals: [
+          {
+            label: "جمع بدهی",
+            value: formatMoney(debtors.reduce((a, d) => a + d.balance, 0)),
+            strong: true,
+          },
+        ],
+        profile,
+      });
+    } else if (tab === "lowstock") {
+      printDocument({
+        docTitle: "گزارش موجودی کم",
+        partyLabel: "نوع گزارش:",
+        partyName: "موجودی کم",
+        date,
+        rows: lowStock.map((p) => ({
+          name: p.name,
+          qty: p.qty || 0,
+          price: p.sellPrice || 0,
+        })),
+        totals: [{ label: "تعداد اقلام", value: formatNumber(lowStock.length), strong: true }],
+        profile,
+      });
+    } else if (tab === "sales") {
+      printDocument({
+        docTitle: "گزارش فروش",
+        partyLabel: "نوع گزارش:",
+        partyName: "فروش",
+        date,
+        rows: [...sales].reverse().map((s) => ({
+          name: `${customers.find((c) => c.id === s.customerId)?.name ?? "متفرقه"} — ${s.date}`,
+          qty: 1,
+          price: s.total || 0,
+        })),
+        totals: [
+          { label: "کل فروش", value: formatMoney(totalSales) },
+          { label: "دریافتی", value: formatMoney(totalPaidSales), strong: true },
+        ],
+        profile,
+      });
+    } else if (tab === "repairs") {
+      printDocument({
+        docTitle: "گزارش تعمیرات",
+        partyLabel: "نوع گزارش:",
+        partyName: "تعمیرات",
+        date,
+        rows: [...repairs].reverse().map((r) => ({
+          name: `${customers.find((c) => c.id === r.customerId)?.name ?? "—"} — ${r.date}`,
+          qty: 1,
+          price: (r.wage || 0) + (r.partsCost || 0),
+        })),
+        totals: [
+          { label: "درآمد تعمیرات", value: formatMoney(totalRepairIncome), strong: true },
+        ],
+        profile,
+      });
+    }
+  }
+
   return (
     <AppShell title="گزارش‌ها" subtitle="گزارش‌های کسب‌وکار">
       <div className="flex flex-wrap gap-2">
@@ -76,6 +175,12 @@ function ReportsPage() {
             {t.label}
           </button>
         ))}
+      </div>
+
+      <div className="mt-3 flex justify-end">
+        <button className="py-btn py-btn-accent text-xs" onClick={printCurrentReport}>
+          چاپ این گزارش
+        </button>
       </div>
 
       {tab === "overview" && (
@@ -156,6 +261,36 @@ function ReportsPage() {
                   <div className="text-left">
                     <div className="font-semibold">{formatMoney(s.total)}</div>
                     <div className="text-xs text-success">دریافتی {formatMoney(s.paid)}</div>
+                    <button
+                      className="mt-1 text-xs text-primary"
+                      onClick={() =>
+                        printDocument({
+                          docTitle: "فاکتور فروش",
+                          docNumber: s.id,
+                          partyLabel: "مشتری:",
+                          partyName:
+                            customers.find((c) => c.id === s.customerId)?.name ?? "مشتری متفرقه",
+                          date: s.date,
+                          rows: (s.items || []).map((i) => ({
+                            name: i.name,
+                            qty: i.qty,
+                            price: i.price,
+                          })),
+                          totals: [
+                            { label: "جمع کل", value: formatMoney(s.total) },
+                            { label: "دریافتی", value: formatMoney(s.paid) },
+                            {
+                              label: "مانده",
+                              value: formatMoney((s.total || 0) - (s.paid || 0)),
+                              strong: true,
+                            },
+                          ],
+                          profile,
+                        })
+                      }
+                    >
+                      چاپ
+                    </button>
                   </div>
                 </div>
               ))}
@@ -182,7 +317,45 @@ function ReportsPage() {
                     <div className="font-semibold">
                       {formatMoney((r.wage || 0) + (r.partsCost || 0))}
                     </div>
-                    <div className="text-xs text-muted-foreground">{r.status}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {REPAIR_STATUS[r.status] ?? r.status}
+                    </div>
+                    <button
+                      className="mt-1 text-xs text-primary"
+                      onClick={() =>
+                        printDocument({
+                          docTitle: "فاکتور تعمیر",
+                          docNumber: r.id,
+                          partyLabel: "مشتری:",
+                          partyName: customers.find((c) => c.id === r.customerId)?.name ?? "—",
+                          date: r.date,
+                          rows: (r.usedParts || []).map((p) => ({
+                            name: p.name,
+                            qty: p.qty,
+                            price: p.price,
+                          })),
+                          totals: [
+                            { label: "اجرت", value: formatMoney(r.wage || 0) },
+                            { label: "هزینه قطعات", value: formatMoney(r.partsCost || 0) },
+                            {
+                              label: "جمع کل",
+                              value: formatMoney((r.wage || 0) + (r.partsCost || 0)),
+                              strong: true,
+                            },
+                          ],
+                          extraInfo: [
+                            { label: "ایراد:", value: r.problem || "—" },
+                            {
+                              label: "وضعیت:",
+                              value: REPAIR_STATUS[r.status] ?? r.status,
+                            },
+                          ],
+                          profile,
+                        })
+                      }
+                    >
+                      چاپ
+                    </button>
                   </div>
                 </div>
               ))}

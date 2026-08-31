@@ -108,12 +108,14 @@ function Dashboard() {
       <h2 className="mt-6 mb-2 text-sm font-bold">دسترسی سریع</h2>
       <div className="grid grid-cols-3 gap-2">
         {[
-          { icon: "👤", label: "مشتری جدید", to: "/customers" as const },
-          { icon: "🔧", label: "ثبت تعمیر", to: "/repairs" as const },
           { icon: "🧾", label: "فاکتور فروش", to: "/sales" as const },
-          { icon: "📦", label: "انبار", to: "/inventory" as const },
+          { icon: "🛒", label: "فاکتور خرید", to: "/purchases" as const },
+          { icon: "🔧", label: "ثبت تعمیر", to: "/repairs" as const },
           { icon: "📥", label: "ثبت پرداخت", to: "/payments" as const },
-          { icon: "⚙️", label: "تنظیمات", to: "/settings" as const },
+          { icon: "👤", label: "مشتری جدید", to: "/customers" as const },
+          { icon: "📦", label: "انبار", to: "/inventory" as const },
+          
+          
         ].map((item) => (
           <Link
             key={item.label}

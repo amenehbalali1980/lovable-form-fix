@@ -1,3 +1,4 @@
+import { ProductPicker } from "@/components/ProductPicker";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell, EmptyState } from "@/components/AppShell";
@@ -110,18 +111,7 @@ function PurchasesPage() {
             onChange={(e) => setSupplier(e.target.value)}
           />
 
-          <select
-            className="py-field"
-            value={0}
-            onChange={(e) => addProduct(Number(e.target.value))}
-          >
-            <option value={0}>+ افزودن کالا به فاکتور…</option>
-            {products.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
+          <ProductPicker products={products} onPick={addProduct} placeholder="+ افزودن کالا به فاکتور…" />
 
           {items.map((item, index) => (
             <div key={index} className="flex items-center gap-2 rounded-md bg-muted p-2 text-xs">
@@ -129,6 +119,9 @@ function PurchasesPage() {
               <input
                 className="py-field w-16 py-1"
                 inputMode="numeric"
+                dir="ltr"
+                lang="en"
+
                 value={item.qty}
                 onChange={(e) =>
                   setItems((prev) =>
@@ -141,6 +134,9 @@ function PurchasesPage() {
               <input
                 className="py-field w-24 py-1"
                 inputMode="numeric"
+                pattern="[0-9]*"
+                dir="ltr"
+                lang="en"
                 value={item.price}
                 onChange={(e) =>
                   setItems((prev) =>
@@ -163,6 +159,9 @@ function PurchasesPage() {
           <input
             className="py-field"
             inputMode="numeric"
+            dir="ltr"
+            lang="en"
+
             placeholder="مبلغ پرداختی"
             value={paid || ""}
             onChange={(e) => setPaid(parseNumber(e.target.value))}
