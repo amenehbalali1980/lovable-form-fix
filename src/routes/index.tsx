@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -85,7 +85,83 @@ function Dashboard() {
   const products = useProducts().data ?? [];
   const sales = useSales().data ?? [];
   const payments = usePayments().data ?? [];
+    const [q, setQ] = useState("");
 
+  const searchResults = useMemo(() => {
+    const term = q.trim().toLowerCase();
+    if (term.length < 2) return [];
+
+    type Hit = {
+      key: string;
+      kind: string;
+      title: string;
+      subtitle?: string | undefined;
+      to: string;
+      params?: Record<string, string> | undefined;
+    };
+
+    const hits: Hit[] = [];
+
+    for (const c of customers) {
+      const hay = `${c.name} ${c.phone ?? ""} ${c.address ?? ""}`.toLowerCase();
+      if (hay.includes(term) && c.id != null) {
+        hits.push({
+          key: `c-${c.id}`,
+          kind: "مشتری",
+          title: c.name,
+          subtitle: c.phone || undefined,
+          to: "/customers/$customerId",
+          params: { customerId: String(c.id) },
+        });
+      }
+    }
+
+    for (const p of products) {
+      const hay = `${p.name} ${p.code ?? ""}`.toLowerCase();
+      if (hay.includes(term)) {
+        hits.push({
+          key: `p-${p.id}`,
+          kind: "کالا",
+          title: p.name,
+          subtitle: p.code || undefined,
+          to: "/inventory",
+        });
+      }
+    }
+
+    for (const s of sales) {
+      const customerName =
+        customers.find((c) => c.id === s.customerId)?.name ?? "مشتری متفرقه";
+      const itemsText = (s.items || []).map((i) => i.name).join(" ");
+      const hay = `${customerName} ${s.date} ${itemsText}`.toLowerCase();
+      if (hay.includes(term)) {
+        hits.push({
+          key: `s-${s.id}`,
+          kind: "فاکتور فروش",
+          title: customerName,
+          subtitle: `${s.date} · ${formatMoney(s.total || 0)}`,
+          to: "/sales",
+        });
+      }
+    }
+
+    for (const r of repairs) {
+      const customerName =
+        customers.find((c) => c.id === r.customerId)?.name ?? "—";
+      const hay = `${customerName} ${r.date} ${r.problem ?? ""} ${r.action ?? ""}`.toLowerCase();
+      if (hay.includes(term)) {
+        hits.push({
+          key: `r-${r.id}`,
+          kind: "تعمیر",
+          title: customerName,
+          subtitle: `${r.date} · ${r.problem || "بدون توضیح"}`,
+          to: "/repairs",
+        });
+      }
+    }
+
+    return hits.slice(0, 20);
+  }, [q, customers, products, sales, repairs]);
   const todaySales = sales.filter((s) => s.date === today).reduce((a, s) => a + (s.total || 0), 0);
   const todayRepairs = repairs.filter((r) => r.date === today);
   const todayIncome = payments
@@ -124,7 +200,105 @@ function Dashboard() {
     }));
   }, [sales]);
   return (
+    
     <AppShell title="پکیج یار" subtitle={`امروز ${todayJalaliWithWeekday()}`}>
+            <div className="mb-4">
+        <input
+          className="py-field"
+          placeholder="🔍 جستجو در مشتریان، کالاها، فاکتورها و تعمیرات…"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+        />
+        {q.trim().length >= 2 ? (
+          <div className="py-card mt-2 max-h-64 overflow-auto divide-y divide-border">
+            {searchResults.length === 0 ? (
+              <p className="p-3 text-sm text-muted-foreground">نتیجه‌ای پیدا نشد</p>
+            ) : (
+              searchResults.map((hit) => {
+                if (hit.to === "/customers/$customerId" && hit.params?.["customerId"]) {
+                  return (
+                    <Link
+                      key={hit.key}
+                      to="/customers/$customerId"
+                      params={{ customerId: hit.params["customerId"] }}
+                      onClick={() => setQ("")}
+                      className="flex items-start justify-between gap-2 p-3 text-sm"
+                    >
+                      <div>
+                        <div className="font-semibold">{hit.title}</div>
+                        {hit.subtitle ? (
+                          <div className="text-xs text-muted-foreground">{hit.subtitle}</div>
+                        ) : null}
+                      </div>
+                      <span className="shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[0.65rem]">
+                        {hit.kind}
+                      </span>
+                    </Link>
+                  );
+                }
+                if (hit.to === "/inventory") {
+                  return (
+                    <Link
+                      key={hit.key}
+                      to="/inventory"
+                      onClick={() => setQ("")}
+                      className="flex items-start justify-between gap-2 p-3 text-sm"
+                    >
+                      <div>
+                        <div className="font-semibold">{hit.title}</div>
+                        {hit.subtitle ? (
+                          <div className="text-xs text-muted-foreground">{hit.subtitle}</div>
+                        ) : null}
+                      </div>
+                      <span className="shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[0.65rem]">
+                        {hit.kind}
+                      </span>
+                    </Link>
+                  );
+                }
+                if (hit.to === "/sales") {
+                  return (
+                    <Link
+                      key={hit.key}
+                      to="/sales"
+                      onClick={() => setQ("")}
+                      className="flex items-start justify-between gap-2 p-3 text-sm"
+                    >
+                      <div>
+                        <div className="font-semibold">{hit.title}</div>
+                        {hit.subtitle ? (
+                          <div className="text-xs text-muted-foreground">{hit.subtitle}</div>
+                        ) : null}
+                      </div>
+                      <span className="shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[0.65rem]">
+                        {hit.kind}
+                      </span>
+                    </Link>
+                  );
+                }
+                return (
+                  <Link
+                    key={hit.key}
+                    to="/repairs"
+                    onClick={() => setQ("")}
+                    className="flex items-start justify-between gap-2 p-3 text-sm"
+                  >
+                    <div>
+                      <div className="font-semibold">{hit.title}</div>
+                      {hit.subtitle ? (
+                        <div className="text-xs text-muted-foreground">{hit.subtitle}</div>
+                      ) : null}
+                    </div>
+                    <span className="shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[0.65rem]">
+                      {hit.kind}
+                    </span>
+                  </Link>
+                );
+              })
+            )}
+          </div>
+        ) : null}
+      </div>
       <div className="grid grid-cols-2 gap-3">
         <Stat icon="💰" label="فروش امروز" value={formatMoney(todaySales)} />
         <Stat icon="🔧" label="تعمیرات امروز" value={`${formatNumber(todayRepairs.length)} مورد`} />
