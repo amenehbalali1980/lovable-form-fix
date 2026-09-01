@@ -1,3 +1,4 @@
+
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
@@ -20,6 +21,9 @@ import {
   useSaveShopProfile,
   useShopProfile,
   type ShopProfile,
+  setPin,
+  clearPin,
+  hasPin,
 } from "@/lib/settings";
 
 export const Route = createFileRoute("/settings")({
@@ -58,7 +62,14 @@ function SettingsPage() {
   const saveShop = useSaveShopProfile();
   const [shop, setShop] = useState<ShopProfile>(emptyShopProfile);
   const [shopLoaded, setShopLoaded] = useState(false);
+    // ----- state مربوط به PIN -----
+  const [pinValue, setPinValue] = useState("");
+  const [pinConfirm, setPinConfirm] = useState("");
+  const [pinEnabled, setPinEnabled] = useState(false);
 
+  useEffect(() => {
+    hasPin().then(setPinEnabled);
+  }, []);
   useEffect(() => {
     if (shopQuery.data && !shopLoaded) {
       setShop(shopQuery.data);
@@ -372,7 +383,72 @@ function SettingsPage() {
           ذخیره اطلاعات مغازه
         </button>
       </div>
+                {/* ========== PIN / قفل محلی ========== */}
+      <div className="py-card mt-4 space-y-3 p-4">
+        <h2 className="text-sm font-bold">🔒 PIN / قفل محلی</h2>
+        <p className="text-xs text-muted-foreground">
+          با فعال کردن PIN، هر بار که اپ باز شود باید رمز را وارد کنید.
+          {pinEnabled ? " (الان فعال است)" : " (الان غیرفعال است)"}
+        </p>
 
+        <input
+          type="password"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          maxLength={8}
+          className="py-field"
+          placeholder="PIN جدید (۴ تا ۸ رقم)"
+          value={pinValue}
+          onChange={(e) => setPinValue(e.target.value.replace(/\D/g, ""))}
+        />
+
+        <input
+          type="password"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          maxLength={8}
+          className="py-field"
+          placeholder="تکرار PIN"
+          value={pinConfirm}
+          onChange={(e) => setPinConfirm(e.target.value.replace(/\D/g, ""))}
+        />
+
+        <button
+          className="py-btn w-full"
+          onClick={async () => {
+            if (pinValue.length < 4) {
+              toast.error("PIN باید حداقل ۴ رقم باشد");
+              return;
+            }
+            if (pinValue !== pinConfirm) {
+              toast.error("PIN و تکرار آن یکسان نیستند");
+              return;
+            }
+            await setPin(pinValue);
+            setPinEnabled(true);
+            setPinValue("");
+            setPinConfirm("");
+            toast.success("PIN با موفقیت ذخیره شد ✓");
+          }}
+        >
+          ذخیره PIN
+        </button>
+
+        {pinEnabled && (
+          <button
+            className="py-btn py-btn-soft w-full"
+            onClick={async () => {
+              await clearPin();
+              setPinEnabled(false);
+              setPinValue("");
+              setPinConfirm("");
+              toast.success("PIN حذف شد");
+            }}
+          >
+            حذف PIN
+          </button>
+        )}
+      </div>
       <div className="py-card mt-4 space-y-2 p-4">
         <h2 className="text-sm font-bold">💾 پشتیبان‌گیری</h2>
         <button className="py-btn w-full" onClick={backup}>

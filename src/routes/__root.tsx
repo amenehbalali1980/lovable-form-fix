@@ -8,7 +8,8 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { hasPin, verifyPin } from "@/lib/settings";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -146,6 +147,99 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  const [checking, setChecking] = useState(true);
+  const [unlocked, setUnlocked] = useState(false);
+  const [pinInput, setPinInput] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const needsPin = await hasPin();
+        if (!needsPin) {
+          setUnlocked(true);
+        }
+      } catch (e) {
+        // اگر دیتابیس مشکل داشت، اجازه ورود بده
+        setUnlocked(true);
+      } finally {
+        setChecking(false);
+      }
+    })();
+  }, []);
+
+  // در حال چک کردن PIN
+  if (checking) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <p className="text-sm text-muted-foreground">در حال بارگذاری...</p>
+      </div>
+    );
+  }
+
+  // صفحه ورود PIN
+  if (!unlocked) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
+        <div className="w-full max-w-xs space-y-4 rounded-xl border border-border bg-card p-6 shadow-sm">
+          <div className="text-center">
+            <div className="mb-2 text-4xl">🔒</div>
+            <h1 className="text-lg font-bold">رمز عبور</h1>
+            <p className="mt-1 text-xs text-muted-foreground">
+              برای ورود، PIN خود را وارد کنید
+            </p>
+          </div>
+
+          <input
+            type="password"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            maxLength={8}
+            className="py-field text-center text-lg tracking-widest"
+            placeholder="••••"
+            value={pinInput}
+            autoFocus
+            onChange={(e) => {
+              setPinInput(e.target.value.replace(/\D/g, ""));
+              setError("");
+            }}
+            onKeyDown={async (e) => {
+              if (e.key === "Enter") {
+                const ok = await verifyPin(pinInput);
+                if (ok) {
+                  setUnlocked(true);
+                } else {
+                  setError("PIN اشتباه است");
+                  setPinInput("");
+                }
+              }
+            }}
+          />
+
+          {error && (
+            <p className="text-center text-sm text-destructive">{error}</p>
+          )}
+
+          <button
+            className="py-btn w-full"
+            onClick={async () => {
+              const ok = await verifyPin(pinInput);
+              if (ok) {
+                setUnlocked(true);
+              } else {
+                setError("PIN اشتباه است");
+                setPinInput("");
+              }
+            }}
+          >
+            ورود
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // اپ اصلی
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
@@ -154,3 +248,5 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+ 
+
