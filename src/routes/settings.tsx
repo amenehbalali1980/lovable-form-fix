@@ -1,4 +1,4 @@
-
+import { getAll, putRecord, type Product } from "@/lib/db";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
@@ -9,11 +9,9 @@ import {
   DB_NAME,
   DB_VERSION,
   exportAll,
-  getAll,
-  importAll,
+   importAll,
   type Customer,
-  type Product,
-} from "@/lib/db";
+ } from "@/lib/db";
 import { downloadCsv, parseCsv, toCsv } from "@/lib/csv";
 import { parseNumber, todayJalali } from "@/lib/format";
 import {
@@ -107,7 +105,27 @@ function SettingsPage() {
     URL.revokeObjectURL(url);
     toast.success("فایل پشتیبان ساخته شد ✓");
   };
+  //موقت
+  const generateCodes = async () => {
+    const products = (await getAll<Product>("products")) ?? [];
+    if (products.length === 0) {
+      toast.error("هیچ کالایی در انبار نیست");
+      return;
+    }
 
+    // مرتب بر اساس id
+    products.sort((a, b) => (a.id || 0) - (b.id || 0));
+
+    for (let i = 0; i < products.length; i++) {
+      const p = products[i]!;
+      const code = "PY_" + String(i + 1).padStart(3, "0");
+      await putRecord("products", { ...p, code });
+    }
+
+    await qc.invalidateQueries();
+    toast.success(`${products.length} کالا کدگذاری شد ✓`);
+  };
+  //موقت
   const restore = async (file: File) => {
     const text = await file.text();
     await importAll(JSON.parse(text));
@@ -454,6 +472,17 @@ function SettingsPage() {
         <button className="py-btn w-full" onClick={backup}>
           دریافت فایل پشتیبان
         </button>
+//موقت
+              <div className="py-card mt-4 space-y-2 p-4">
+        <h2 className="text-sm font-bold">🏷️ کدگذاری کالاها</h2>
+        <p className="text-xs text-muted-foreground">
+          برای همه کالاهای انبار کدهایی مثل PY_001، PY_002 و ... می‌سازد.
+        </p>
+        <button className="py-btn w-full" onClick={() => void generateCodes()}>
+          ساخت کد برای همه کالاها
+        </button>
+      </div>
+//موقت
         <button className="py-btn py-btn-soft w-full" onClick={() => fileRef.current?.click()}>
           بازگردانی از فایل
         </button>
