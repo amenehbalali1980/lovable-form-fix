@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
 import type { Product } from "@/lib/db";
+import { BarcodeScanner } from "@/components/BarcodeScanner";
+import { toast } from "sonner";
 
 type Props = {
   products: Product[];
@@ -16,6 +18,7 @@ export function ProductPicker({
 }: Props) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const [scanning, setScanning] = useState(false);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -29,22 +32,45 @@ export function ProductPicker({
       .slice(0, 30);
   }, [products, query]);
 
+  const handleScan = (code: string) => {
+    setScanning(false);
+    const found = products.find(
+      (p) => (p.code ?? "").toLowerCase() === code.toLowerCase().trim(),
+    );
+    if (found?.id != null) {
+      onPick(found.id);
+      toast.success(`اضافه شد: ${found.name}`);
+    } else {
+      toast.error(`کالایی با کد «${code}» پیدا نشد`);
+    }
+  };
+
   return (
     <div className="relative">
-      <input
-        className="py-field"
-        placeholder={placeholder}
-        value={query}
-        onChange={(e) => {
-          setQuery(e.target.value);
-          setOpen(true);
-        }}
-        onFocus={() => setOpen(true)}
-        onBlur={() => {
-          // کمی تأخیر تا کلیک روی آیتم ثبت شود
-          setTimeout(() => setOpen(false), 150);
-        }}
-      />
+      <div className="flex gap-2">
+        <input
+          className="py-field flex-1"
+          placeholder={placeholder}
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setOpen(true);
+          }}
+          onFocus={() => setOpen(true)}
+          onBlur={() => {
+            setTimeout(() => setOpen(false), 150);
+          }}
+        />
+        <button
+          type="button"
+          className="py-btn py-btn-soft shrink-0 px-3"
+          title="اسکن بارکد / QR"
+          onClick={() => setScanning(true)}
+        >
+          📷
+        </button>
+      </div>
+
       {open ? (
         <div className="absolute z-20 mt-1 max-h-48 w-full overflow-auto rounded-md border border-border bg-card shadow-md">
           {filtered.length === 0 ? (
@@ -63,7 +89,14 @@ export function ProductPicker({
                   setOpen(false);
                 }}
               >
-                <span>{p.name}</span>
+                <span>
+                  {p.name}
+                  {p.code ? (
+                    <span className="mr-2 text-[11px] text-muted-foreground" dir="ltr">
+                      {p.code}
+                    </span>
+                  ) : null}
+                </span>
                 {showStock ? (
                   <span className="text-xs text-muted-foreground">موجودی: {p.qty}</span>
                 ) : null}
@@ -71,6 +104,10 @@ export function ProductPicker({
             ))
           )}
         </div>
+      ) : null}
+
+      {scanning ? (
+        <BarcodeScanner onScan={handleScan} onClose={() => setScanning(false)} />
       ) : null}
     </div>
   );

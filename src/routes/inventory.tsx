@@ -1,3 +1,4 @@
+import { QrCodeModal } from "@/components/QrCodeModal";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell, EmptyState } from "@/components/AppShell";
@@ -41,7 +42,7 @@ const [form, setForm] = useState<Product>(emptyProduct);
     (p) => p.name.includes(search) || (p.code ?? "").includes(search),
   );
   const totalQty = products.reduce((a, p) => a + (p.qty || 0), 0);
-
+  const [qrProduct, setQrProduct] = useState<{ code: string; name: string } | null>(null);
   return (
     <AppShell
       title="انبار"
@@ -158,8 +159,13 @@ const [form, setForm] = useState<Product>(emptyProduct);
           {filtered.map((p) => (
   <div key={p.id} className="border-b border-border last:border-b-0">
     <div className="flex items-center justify-between gap-2 p-3">
-      <div>
+            <div>
         <div className="text-sm font-semibold">{p.name}</div>
+        {p.code ? (
+          <div className="text-[11px] text-muted-foreground/80" dir="ltr">
+            {p.code}
+          </div>
+        ) : null}
         <div className="text-xs text-muted-foreground">فروش {formatMoney(p.sellPrice)}</div>
       </div>
       <div className="flex items-center gap-3 text-xs">
@@ -169,6 +175,14 @@ const [form, setForm] = useState<Product>(emptyProduct);
           {formatNumber(p.qty)} {p.unit}
         </span>
         
+                {p.code ? (
+          <button
+            className="text-primary"
+            onClick={() => setQrProduct({ code: p.code!, name: p.name })}
+          >
+            QR
+          </button>
+        ) : null}
         <button
           className="text-primary"
           onClick={() => {
@@ -289,6 +303,13 @@ const [form, setForm] = useState<Product>(emptyProduct);
 ))}
         </div>
       )}
+            {qrProduct ? (
+        <QrCodeModal
+          code={qrProduct.code}
+          name={qrProduct.name}
+          onClose={() => setQrProduct(null)}
+        />
+      ) : null}
     </AppShell>
   );
 }
