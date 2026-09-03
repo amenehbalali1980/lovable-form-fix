@@ -1,9 +1,9 @@
 import { writeFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { generateSW } from "workbox-build";
 
-const clientDir = new URL("../dist/client", import.meta.url).pathname;
-
+const clientDir = fileURLToPath(new URL("../dist/client", import.meta.url));
 async function findAsset(prefix, ext) {
   const files = await readdir(join(clientDir, "assets"));
   const match = files.find((f) => f.startsWith(prefix) && f.endsWith(ext));
