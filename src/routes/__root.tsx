@@ -1,3 +1,4 @@
+import { needsBackup } from "@/lib/backup-flag";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
@@ -152,14 +153,15 @@ function RootComponent() {
   const [pinInput, setPinInput] = useState("");
   const [error, setError] = useState("");
 
+  // چک PIN هنگام باز شدن اپ
   useEffect(() => {
     (async () => {
       try {
-        const needsPin = await hasPin();
-        if (!needsPin) {
+        const pinExists = await hasPin();
+        if (!pinExists) {
           setUnlocked(true);
         }
-      } catch (e) {
+      } catch {
         // اگر دیتابیس مشکل داشت، اجازه ورود بده
         setUnlocked(true);
       } finally {
@@ -167,6 +169,20 @@ function RootComponent() {
       }
     })();
   }, []);
+
+  // هشدار هنگام بستن تب، فقط وقتی وارد اپ شده و بکاپ لازم است
+  useEffect(() => {
+    if (!unlocked) return;
+
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!needsBackup()) return;
+      e.preventDefault();
+      e.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [unlocked]);
 
   // در حال چک کردن PIN
   if (checking) {
@@ -216,9 +232,9 @@ function RootComponent() {
             }}
           />
 
-          {error && (
+          {error ? (
             <p className="text-center text-sm text-destructive">{error}</p>
-          )}
+          ) : null}
 
           <button
             className="py-btn w-full"

@@ -14,6 +14,7 @@ import {
   type StockTransaction,
   type StoreName,
 } from "./db";
+import { markNeedsBackup } from "./backup-flag";
 
 export function useRows<T>(store: StoreName) {
   return useQuery({
@@ -35,7 +36,10 @@ export function useSave<T extends { id?: number }>(store: StoreName) {
       const { id: _omit, ...rest } = payload as Record<string, unknown> & { id?: number };
       return addRecord(store, rest);
     },
-    onSuccess: () => qc.invalidateQueries(),
+    onSuccess: () => {
+      markNeedsBackup();
+      qc.invalidateQueries();
+    },
   });
 }
 
@@ -43,9 +47,13 @@ export function useRemove(store: StoreName) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: number) => deleteRecord(store, id),
-    onSuccess: () => qc.invalidateQueries(),
+    onSuccess: () => {
+      markNeedsBackup();
+      qc.invalidateQueries();
+    },
   });
 }
+
 /** حذف مشتری همراه با دستگاه‌ها و تعمیرات مرتبط */
 export function useRemoveCustomer() {
   const qc = useQueryClient();
@@ -67,6 +75,7 @@ export function useRemoveCustomer() {
       await deleteRecord("customers", customerId);
     },
     onSuccess: () => {
+      markNeedsBackup();
       qc.invalidateQueries();
     },
   });
@@ -79,7 +88,6 @@ export function useRemoveDevice() {
     mutationFn: async (deviceId: number) => {
       const repairs = await getAll<Repair>("repairs");
       for (const r of repairs) {
-        // مقایسه عددی برای جلوگیری از mismatch رشته/عدد
         if (Number(r.deviceId) === Number(deviceId) && r.id != null) {
           await deleteRecord("repairs", r.id);
         }
@@ -87,12 +95,14 @@ export function useRemoveDevice() {
       await deleteRecord("devices", deviceId);
     },
     onSuccess: () => {
+      markNeedsBackup();
       qc.invalidateQueries({ queryKey: ["devices"] });
       qc.invalidateQueries({ queryKey: ["repairs"] });
       qc.invalidateQueries();
     },
   });
 }
+
 export function useCustomers() {
   return useRows<Customer>("customers");
 }
@@ -156,7 +166,10 @@ export function useStockDeltas() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (deltas: { productId?: number | null; qty: number }[]) => applyStockDeltas(deltas),
-    onSuccess: () => qc.invalidateQueries(),
+    onSuccess: () => {
+      markNeedsBackup();
+      qc.invalidateQueries();
+    },
   });
 }
 

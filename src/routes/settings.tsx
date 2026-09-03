@@ -12,6 +12,7 @@ import {
    importAll,
   type Customer,
  } from "@/lib/db";
+ import { clearNeedsBackup, getLastBackupAt, needsBackup } from "@/lib/backup-flag";
 import { downloadCsv, parseCsv, toCsv } from "@/lib/csv";
 import { parseNumber, todayJalali } from "@/lib/format";
 import {
@@ -60,10 +61,19 @@ function SettingsPage() {
   const saveShop = useSaveShopProfile();
   const [shop, setShop] = useState<ShopProfile>(emptyShopProfile);
   const [shopLoaded, setShopLoaded] = useState(false);
-    // ----- state مربوط به PIN -----
+  
+
+ 
+  // ----- state مربوط به PIN -----
   const [pinValue, setPinValue] = useState("");
   const [pinConfirm, setPinConfirm] = useState("");
   const [pinEnabled, setPinEnabled] = useState(false);
+  const [lastBackup, setLastBackup] = useState<string | null>(null);
+const [dirty, setDirty] = useState(false);
+useEffect(() => {
+  setLastBackup(getLastBackupAt());
+  setDirty(needsBackup());
+}, []);
 
   useEffect(() => {
     hasPin().then(setPinEnabled);
@@ -105,6 +115,21 @@ function SettingsPage() {
     URL.revokeObjectURL(url);
     toast.success("فایل پشتیبان ساخته شد ✓");
   };
+  const endOfWorkBackup = async () => {
+  const data = await exportAll();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `packageyar-backup-${todayJalali().replace(/\//g, "-")}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+
+  clearNeedsBackup();
+  setDirty(false);
+  setLastBackup(new Date().toISOString());
+  toast.success("پشتیبان دانلود شد. می‌توانید با خیال راحت خارج شوید ✓");
+};
   //موقت
   
 const generateCodes = async () => {
@@ -526,7 +551,25 @@ const generateCodes = async () => {
         />
         {message ? <p className="text-xs text-success">{message}</p> : null}
       </div>
-
+          <div className="py-card mt-4 space-y-2 p-4">
+  <h2 className="text-sm font-bold">🧾 پایان کار</h2>
+  <p className="text-xs text-muted-foreground">
+    بعد از اتمام کار روزانه یک‌بار این دکمه را بزنید تا فایل پشتیبان دانلود شود.
+  </p>
+  <div className="text-xs text-muted-foreground">
+    {dirty ? (
+      <span className="text-destructive">از آخرین پشتیبان تا الان تغییر داشته‌اید.</span>
+    ) : (
+      <span className="text-success">وضعیت پشتیبان به‌روز است.</span>
+    )}
+    <br />
+    آخرین پشتیبان فایل:{" "}
+    {lastBackup ? new Date(lastBackup).toLocaleString("fa-IR") : "هنوز گرفته نشده"}
+  </div>
+  <button className="py-btn w-full" onClick={() => void endOfWorkBackup()}>
+    پایان کار و دانلود پشتیبان
+  </button>
+</div>
         
 <div className="py-card mt-4 space-y-2 p-4">
   <h2 className="text-sm font-bold">🏷️ تکمیل کد کالاها</h2>
