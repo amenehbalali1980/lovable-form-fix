@@ -106,26 +106,63 @@ function SettingsPage() {
     toast.success("فایل پشتیبان ساخته شد ✓");
   };
   //موقت
-  const generateCodes = async () => {
-    const products = (await getAll<Product>("products")) ?? [];
-    if (products.length === 0) {
-      toast.error("هیچ کالایی در انبار نیست");
-      return;
+  
+const generateCodes = async () => {
+  const products = (await getAll<Product>("products")) ?? [];
+
+  if (products.length === 0) {
+    toast.error("هیچ کالایی در انبار نیست");
+    return;
+  }
+
+  // فقط کالاهایی که کد ندارند
+  const uncodedProducts = products.filter(
+    (p) => !p.code || p.code.trim() === "",
+  );
+
+  if (uncodedProducts.length === 0) {
+    toast.success("همه کالاها قبلاً کدگذاری شده‌اند ✓");
+    return;
+  }
+
+  // پیدا کردن بزرگ‌ترین شماره کد موجود
+  let maxNumber = 0;
+
+  for (const p of products) {
+    const match = p.code?.match(/^PY_(\d+)$/);
+
+    if (match) {
+      const number = Number(match[1]);
+      if (number > maxNumber) {
+        maxNumber = number;
+      }
     }
+  }
 
-    // مرتب بر اساس id
-    products.sort((a, b) => (a.id || 0) - (b.id || 0));
+  // مرتب کردن کالاهای بدون کد بر اساس id
+  uncodedProducts.sort((a, b) => (a.id || 0) - (b.id || 0));
 
-    for (let i = 0; i < products.length; i++) {
-      const p = products[i]!;
-      const code = "PY_" + String(i + 1).padStart(3, "0");
-      await putRecord("products", { ...p, code });
-    }
+  // فقط کالاهای بدون کد را کدگذاری کن
+  for (let i = 0; i < uncodedProducts.length; i++) {
+    const product = uncodedProducts[i]!;
 
-    await qc.invalidateQueries();
-    toast.success(`${products.length} کالا کدگذاری شد ✓`);
-  };
+    const code = "PY_" + String(maxNumber + i + 1).padStart(3, "0");
+
+    await putRecord("products", {
+      ...product,
+      code,
+    });
+  }
+
+  await qc.invalidateQueries();
+
+  toast.success(`${uncodedProducts.length} کالای بدون کد، کدگذاری شد ✓`);
+};
+
   //موقت
+
+
+
   const restore = async (file: File) => {
     const text = await file.text();
     await importAll(JSON.parse(text));
@@ -472,18 +509,9 @@ function SettingsPage() {
         <button className="py-btn w-full" onClick={backup}>
           دریافت فایل پشتیبان
         </button>
-//موقت
-              <div className="py-card mt-4 space-y-2 p-4">
-        <h2 className="text-sm font-bold">🏷️ کدگذاری کالاها</h2>
-        <p className="text-xs text-muted-foreground">
-          برای همه کالاهای انبار کدهایی مثل PY_001، PY_002 و ... می‌سازد.
-        </p>
-        <button className="py-btn w-full" onClick={() => void generateCodes()}>
-          ساخت کد برای همه کالاها
-        </button>
-      </div>
-//موقت
-        <button className="py-btn py-btn-soft w-full" onClick={() => fileRef.current?.click()}>
+
+        <button 
+        className="py-btn py-btn-soft w-full" onClick={() => fileRef.current?.click()}>
           بازگردانی از فایل
         </button>
         <input
@@ -498,6 +526,24 @@ function SettingsPage() {
         />
         {message ? <p className="text-xs text-success">{message}</p> : null}
       </div>
+
+        
+<div className="py-card mt-4 space-y-2 p-4">
+  <h2 className="text-sm font-bold">🏷️ تکمیل کد کالاها</h2>
+
+  <p className="text-xs text-muted-foreground">
+    برای کالاهایی که هنوز کد ندارند، کدهای PY_001، PY_002 و ... می‌سازد.
+    کدهای قبلی تغییر نمی‌کنند.
+  </p>
+
+  <button
+    className="py-btn w-full"
+    onClick={() => void generateCodes()}
+  >
+    تکمیل کد کالاهای بدون کد
+  </button>
+</div>
+
 
       <div className="py-card mt-4 space-y-2 p-4">
         <h2 className="text-sm font-bold">📊 خروجی / ورودی CSV</h2>
