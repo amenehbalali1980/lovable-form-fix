@@ -135,43 +135,75 @@ function SalesPage() {
           <ProductPicker products={products} onPick={addProduct} placeholder="+ افزودن کالا به فاکتور…" />
 
           {items.map((item, index) => (
-            <div key={index} className="flex items-center gap-2 rounded-md bg-muted p-2 text-xs">
-              <span className="flex-1">{item.name}</span>
-              <input
-                className="py-field"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                dir="ltr"
-                lang="en"
-                value={item.qty}
-                onChange={(e) =>
-                  setItems((prev) =>
-                    prev.map((it, i) =>
-                      i === index ? { ...it, qty: parseNumber(e.target.value) } : it,
-                    ),
-                  )
-                }
-              />
-              <input
-                className="py-field w-24 py-1"
-                inputMode="numeric"
-                dir="ltr"
-                lang="en"
+  <div key={index} className="flex items-center gap-2 rounded-md bg-muted p-2 text-xs">
+    <span className="flex-1">{item.name}</span>
 
-                value={item.price}
-                onChange={(e) =>
-                  setItems((prev) =>
-                    prev.map((it, i) =>
-                      i === index ? { ...it, price: parseNumber(e.target.value) } : it,
-                    ),
-                  )
-                }
-              />
-              <button onClick={() => setItems((prev) => prev.filter((_, i) => i !== index))}>
-                ✕
-              </button>
-            </div>
-          ))}
+    <div className="flex items-center gap-1">
+      <button
+        type="button"
+        className="flex h-8 w-8 items-center justify-center rounded-md border border-border bg-background text-base font-bold"
+        onClick={() =>
+          setItems((prev) =>
+            prev.map((it, i) =>
+              i === index ? { ...it, qty: Math.max(1, (it.qty || 1) - 1) } : it,
+            ),
+          )
+        }
+      >
+        −
+      </button>
+
+      <input
+        className="py-field w-14 text-center"
+        inputMode="numeric"
+        pattern="[0-9]*"
+        dir="ltr"
+        lang="en"
+        value={item.qty}
+        onChange={(e) =>
+          setItems((prev) =>
+            prev.map((it, i) =>
+              i === index ? { ...it, qty: parseNumber(e.target.value) || 1 } : it,
+            ),
+          )
+        }
+      />
+
+      <button
+        type="button"
+        className="flex h-8 w-8 items-center justify-center rounded-md border border-border bg-background text-base font-bold"
+        onClick={() =>
+          setItems((prev) =>
+            prev.map((it, i) =>
+              i === index ? { ...it, qty: (it.qty || 0) + 1 } : it,
+            ),
+          )
+        }
+      >
+        +
+      </button>
+    </div>
+
+    <input
+      className="py-field w-24 py-1"
+      inputMode="numeric"
+      dir="ltr"
+      lang="en"
+      value={item.price}
+      onChange={(e) =>
+        setItems((prev) =>
+          prev.map((it, i) =>
+            i === index ? { ...it, price: parseNumber(e.target.value) } : it,
+          ),
+        )
+      }
+    />
+
+    <button onClick={() => setItems((prev) => prev.filter((_, i) => i !== index))}>
+      ✕
+    </button>
+  </div>
+))}
 
           {stockIssues.length > 0 ? (
             <ul className="space-y-1 rounded-md border border-warning/40 bg-warning/10 p-2 text-xs text-foreground">
